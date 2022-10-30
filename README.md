@@ -1,6 +1,6 @@
 # Deskriptive_Statistik
 
-Read-only: Ihr könnt nur die Dateien downloaden die ich zur Verfügung stelle.
+Read-only: Ihr könnt nur die Dateien downloaden die ich zur Verfügung stelle. Ihr könnt nicht selber hochladen.
 
 Konzept: Ihr schickt mir zu besprochenen Aufgaben Lösungen. Ich kontrolliere diese auf ausreichende Korrektheit und 
 wenn es einigermaßen passt, lade ich die Datei als "Lösung_Übung_XX.pdf" hier hoch. 
