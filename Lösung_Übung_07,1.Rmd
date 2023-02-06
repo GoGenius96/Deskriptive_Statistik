@@ -1,0 +1,116 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Statistische Grafiken (LÖSUNG Blatt 7)
+
+## Aufgabe 1
+
+Packages laden und Daten übertragen.
+
+```{r, include=FALSE}
+
+library(tidyverse)
+
+df <- data.frame(Geschlecht = c(1,1,1,2,1,1,2,1,2,2,1,2,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,1,1,1,1,1,1,2,2,2),
+                 Noten = c(3,2,3,1,3,1,2,2,2,3,3,2,2,2,1,1,2,3,3,4,2,4,1,2,2,3,1,2,2,4,2,2,2,3,4,2))
+```
+
+### Aufgabe 1a)
+
+**Erstellen Sie eine Häufigkeitstabelle für das Merkmal Note, die absolute und relative Häufigkeiten enthält.**
+
+```{r}
+df %>%
+  group_by(Noten) %>%
+  summarise("Absolute Häufigkeit" = n()) %>%
+  mutate("relative Häufigkeit" = round(`Absolute Häufigkeit`/sum(`Absolute Häufigkeit`),2)) %>%
+  knitr::kable(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+
+```
+
+### Aufgabe 1b)
+
+```{r}
+ggplot(df, aes(x = Noten, y = after_stat(prop))) +
+  geom_bar(fill = "grey", color = "black") +
+  labs(y = "relativer Anteil der Noten (f_j)") +
+  theme_bw()
+```
+
+
+### Aufgabe 1c)
+
+**Unterteilen Sie die Stichprobe nach Geschlecht. Wie groß sind die beiden Stichproben? Erstellen Sie nun für beide Gruppen getrennt Häufigkeitstabellen mit relativen Häufigkeiten für das Merkmal Note. Zeichnen Sie jeweils ein Säulendiagramm der relativen Häufigkeiten und interpretieren Sie das Ergebnis.**
+
+In der Stichprobe sind `r count(df, Geschlecht)[1, "n"]` Frauen und `r count(df, Geschlecht)[2, "n"]` Männer enthalten.
+
+Die Häufigkeitstabelle für Frauen sieht wie folgt aus:
+```{r}
+df %>% filter(Geschlecht == 1) %>%
+  group_by(Noten) %>%
+  summarise("Absolute Häufigkeit" = n()) %>%
+  mutate("relative Häufigkeit" = round(`Absolute Häufigkeit`/sum(`Absolute Häufigkeit`),2)) %>%
+  knitr::kable(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+
+```
+
+
+Die Häufigkeitstabelle für Männer sieht wie folgt aus:
+```{r}
+df %>% filter(Geschlecht == 2) %>%
+  group_by(Noten) %>%
+  summarise("Absolute Häufigkeit" = n()) %>%
+  mutate("relative Häufigkeit" = round(`Absolute Häufigkeit`/sum(`Absolute Häufigkeit`),2)) %>%
+  knitr::kable(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+
+```
+
+Säulendiagramme für die jeweiligen Gruppen:
+```{r}
+df$Geschlecht <- factor(df$Geschlecht, levels = c("1", "2"), labels = c("Frauen", "Männer"))
+
+ggplot(df, aes(x = Noten, y = after_stat(prop))) +
+  geom_bar(fill = "grey", color = "black") +
+  labs(y = "relativer Anteil der Noten (f_j)") +
+  theme_bw() +
+  facet_wrap(vars(Geschlecht))
+```
+
+Besser:
+```{r}
+ggplot(df, aes(x = Noten, y = after_stat(prop), fill = Geschlecht)) +
+  geom_bar(position = "dodge", color = "black") +
+  labs(y = "relativer Anteil der Noten (f_j)") +
+  theme_bw()
+```
+
+
+Interpretation: Die Männer scheinen etwas schlechter im Studium zu sein. Diese weisen in allen Noten außer der Note 4 eine leicht geringere relative Häufigkeit auf. Der Anteil dieser Note unter den Männern ist mit 15% fast 2x größer als der unter den Frauen mit 9%.
+
+### Aufgabe 1d)
+
+**Erstellen Sie für die beiden Geschlechter jeweils ein Stapeldiagramm bezogen auf die relativen Häufigkeiten des Merkmals Note. Welche Note war jeweils die schlechteste unter den besten 30%. Welche Note war jeweils die beste unter den schlechtesten 10%?**
+
+```{r}
+df %>%
+  group_by(Geschlecht, Noten) %>%
+  summarise("Absolute Häufigkeit" = n()) %>%
+  mutate("relative Häufigkeit" = `Absolute Häufigkeit`/sum(`Absolute Häufigkeit`),
+         Noten = factor(Noten)) %>%
+  ggplot(aes(x = Geschlecht, y = `relative Häufigkeit`, fill = Noten)) +
+  geom_col(width = .75) +
+  scale_fill_brewer(palette = "Oranges") +
+  geom_hline(yintercept = 0.7, color = "black") +
+  geom_hline(yintercept = 0.1, color = "black") +
+  theme_bw()
+```
+
+Bei Frauen und Männern ist die schlechteste Note unter den besten 30% eine 2.
+Bei Frauen ist die beste Note unter den schlechtesten 10% eine 3.
+Bei Männern ist die beste Note unter den schlechtesten 10% eine 4.
+

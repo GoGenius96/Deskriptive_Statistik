@@ -1,0 +1,19 @@
+---
+title: "Pi"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+n <- 100000
+x <- replicate(n, sum(runif(2, min = 0, max = 1)^2) <= 1)
+estimate_pi <- mean(x) * 4
+estimate_pi
+
+estimate_pi + c("lower" = -1.96, "upper" = 1.96) * sqrt(sd(x * 4)) / sqrt(n)
+
+```
+
